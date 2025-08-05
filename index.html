@@ -12,29 +12,243 @@
       background: #0f2027;
       overflow-x: hidden;
       text-align: center;
-    }                   
+    }
 
     h2 {
       color: black;
       margin-bottom: 20px;
     }
 
-    select {
-      width: 300px;
-      padding: 10px;
-      font-size: 16px;
-      margin-bottom: 20px;
-    }
-
     .student-list-container {
       width: 300px;
-      max-height: 300px;
+      max-height: 400px;
       margin: 0 auto;
       overflow-y: auto;
       background: #fdfdfd;
       padding: 10px;
       border: 2px solid #ccc;
       border-radius: 8px;
+    }
+
+    .student-item {
+      background: #d35400;
+      color: white;
+      margin-bottom: 12px;
+      padding: 10px;
+      border-radius: 5px;
+      position: relative;
+    }
+
+    .student-name {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .student-name span {
+      font-weight: bold;
+    }
+
+    .student-name img {
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+    }
+
+    .reason-list {
+      margin-top: 8px;
+      text-align: left;
+      background-color: white;
+      color: black;
+      border-radius: 5px;
+      display: none;
+    }
+
+    .reason-list div {
+      padding: 8px;
+      border-bottom: 1px solid #ccc;
+      cursor: pointer;
+    }
+
+    .reason-list div:hover {
+      background-color: #f1f1f1;
+    }
+
+    .selected-reason {
+      margin-top: 5px;
+      font-size: 13px;
+      font-style: italic;
+      color: #ffffcc;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      background-color: #00b894;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    #reportOutput {
+      margin-top: 30px;
+      color: white;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+
+<div style="max-width: 600px; margin: 40px auto; background: rgba(255,255,255,0.05); padding: 25px; border-radius: 12px; box-shadow: 0 0 20px rgba(0,255,255,0.1);">
+  <h2>Universal PU College</h2>
+
+  <!-- Section Dropdown -->
+  <label for="sectionSelect"><strong>Select Section:</strong></label><br>
+  <select id="sectionSelect">
+    <option value="Select">--Select---</option>
+    <option value="C1">C1</option>
+    <option value="C2">C2</option>
+    <option value="C3">C3</option>
+  </select>
+
+  <!-- Student list -->
+  <div class="student-list-container" id="studentList"></div>
+
+  <!-- Submit Button -->
+  <button onclick="submitReport()">Submit Report</button>
+
+  <!-- Output -->
+  <div id="reportOutput"></div>
+</div>
+
+<script>
+  const data = {
+    "C1": [
+      { name: "Punith R", phone: "9741215397" },
+      { name: "Prathiksha madam", phone: "9980296684" },
+      { name: "jagdish sir", phone: "9886799313" },
+      { name: "vasantha madam", phone: "8618300440" },
+      { name: "tharkesh sir", phone: "9632358155" },
+      { name: "anushree madam", phone: "9611204005" }
+    ],
+    "C2": [
+      { name: "Sudeep", phone: "9988776655" },
+      { name: "GuruPrasad", phone: "8765432190" },
+      { name: "Harish", phone: "9012345678" },
+      { name: "Mahesh", phone: "9312345670" },
+      { name: "Ravi", phone: "9412345678" },
+      { name: "Shiva", phone: "9512345678" }
+    ],
+    "C3": [
+      { name: "Danush", phone: "9876543212" },
+      { name: "GuruPrasad", phone: "8765432190" },
+      { name: "Harish", phone: "9012345678" },
+      { name: "Mahesh", phone: "9312345670" },
+      { name: "Ravi", phone: "9412345678" },
+      { name: "Shiva", phone: "9512345678" }
+    ]
+  };
+
+  const reasons = [
+    "Health problem",
+    "Bus Late",
+    "Went to collect T.C",
+    "Not feeling well",
+    "Went to Hometown",
+    "Parents health issue",
+    "Went to Marriage function",
+    "Went to Cremation Ceremony",
+    "Not answering",
+    "Not Reachable"
+  ];
+
+  const sectionSelect = document.getElementById("sectionSelect");
+  const studentListDiv = document.getElementById("studentList");
+  const reportOutput = document.getElementById("reportOutput");
+
+  sectionSelect.addEventListener("change", () => {
+    const section = sectionSelect.value;
+    const students = data[section];
+    studentListDiv.innerHTML = "";
+    reportOutput.innerHTML = "";
+
+    if (students && students.length > 0) {
+      students.forEach((student, index) => {
+        const div = document.createElement("div");
+        div.className = "student-item";
+        div.dataset.name = student.name;
+        div.dataset.reason = "";
+
+        // Student Header
+        const header = document.createElement("div");
+        header.className = "student-name";
+        header.innerHTML = `
+          <span>${index + 1}. ${student.name}</span>
+          <a href="tel:${student.phone}">
+            <img src="https://img.icons8.com/ios-filled/50/ffffff/phone.png" alt="Call" />
+          </a>
+        `;
+
+        // Selected Reason Label
+        const selectedReason = document.createElement("div");
+        selectedReason.className = "selected-reason";
+
+        // Reason List
+        const reasonList = document.createElement("div");
+        reasonList.className = "reason-list";
+        reasons.forEach(reason => {
+          const r = document.createElement("div");
+          r.textContent = reason;
+          r.addEventListener("click", () => {
+            div.dataset.reason = reason;
+            selectedReason.textContent = `Reason: ${reason}`;
+            reasonList.style.display = "none";
+          });
+          reasonList.appendChild(r);
+        });
+
+        header.addEventListener("click", () => {
+          // Toggle visibility
+          reasonList.style.display = reasonList.style.display === "block" ? "none" : "block";
+        });
+
+        div.appendChild(header);
+        div.appendChild(reasonList);
+        div.appendChild(selectedReason);
+        studentListDiv.appendChild(div);
+      });
+    } else {
+      studentListDiv.innerHTML = "<p>No students found in this section.</p>";
+    }
+  });
+
+  function submitReport() {
+    const studentItems = document.querySelectorAll(".student-item");
+    let report = "<h3>Absentees Report:</h3><ul>";
+    let anySelected = false;
+
+    studentItems.forEach(item => {
+      const name = item.dataset.name;
+      const reason = item.dataset.reason;
+      if (reason) {
+        report += `<li><strong>${name}</strong>: ${reason}</li>`;
+        anySelected = true;
+      }
+    });
+
+    report += "</ul>";
+    reportOutput.innerHTML = anySelected ? report : "<p style='color:red;'>No reasons selected.</p>";
+  }
+</script>
+
+</body>
+</html>      border-radius: 8px;
     }
 
     .student-item {
@@ -152,4 +366,5 @@
  
 
 </body>
+
 </html>
